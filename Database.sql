@@ -96,7 +96,7 @@ CREATE TABLE Billett (
     ForestillingsTidspunkt TIME NOT NULL,
     TeaterStykkeID INT NOT NULL,
     RadNr INT NOT NULL,
-    StolNr INT NOT NULL,
+    SeteNr INT NOT NULL,
     OmraadeNavn VARCHAR(50) NOT NULL DEFAULT 'Standard',
     SalID INT NOT NULL,
     PRIMARY KEY (BillettID),
@@ -104,7 +104,7 @@ CREATE TABLE Billett (
     FOREIGN KEY (TeaterStykkeID) REFERENCES Teaterstykke(TeaterstykkeID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (ForestillingsDato, ForestillingsTidspunkt, TeaterStykkeID) REFERENCES Forestilling(Dato, Tidspunkt, TeaterstykkeID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (SalID) REFERENCES TeaterSal(SalID) ON DELETE CASCADE ON UPDATE CASCADE, --Burde undersøke om denne er nødvendig
-    FOREIGN KEY (SalID, RadNr, StolNr, OmraadeNavn) REFERENCES Stol(SalID, RadNr, StolNr, OmraadeNavn) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (SalID, RadNr, SeteNr, OmraadeNavn) REFERENCES Stol(SalID, RadNr, SeteNr, OmraadeNavn) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 DROP TABLE IF EXISTS Stol;
@@ -113,7 +113,7 @@ CREATE TABLE Stol (
     RadNr INT NOT NULL,
     SeteNr INT NOT NULL,
     OmraadeNavn VARCHAR(50) NOT NULL DEFAULT 'Standard',
-    PRIMARY KEY (SalID, StolNr, RadNr, Omraadenavn),
+    PRIMARY KEY (SalID, SeteNr, RadNr, Omraadenavn),
     FOREIGN KEY (SalID) REFERENCES TeaterSal(SalID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
