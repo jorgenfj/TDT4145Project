@@ -57,8 +57,8 @@ CREATE TABLE ReservererForestilling (
     REFERENCES Forestilling(TeaterstykkeID, Dato, Tidspunkt) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-DROP TABLE IF EXISTS ReservererForestilling;
-CREATE TABLE ReservererForestilling (
+DROP TABLE IF EXISTS ReservererStol;
+CREATE TABLE ReservererStol (
     KjopID INT NOT NULL,
     BillettNr INT NOT NULL,
     SalID INT NOT NULL,
