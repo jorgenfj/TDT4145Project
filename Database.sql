@@ -1,15 +1,7 @@
 BEGIN TRANSACTION;
 
-DROP TABLE IF EXISTS Teatersesong;
-CREATE TABLE Teatersesong (
-    SesongID INT NOT NULL,
-    Aar INT NOT NULL,
-    Sesong VARCHAR(50) NOT NULL,
-    PRIMARY KEY (SesongID)
-);
-
-DROP TABLE IF EXISTS TeaterSal;
-CREATE TABLE TeaterSal (
+DROP TABLE IF EXISTS Teatersal;
+CREATE TABLE Teatersal (
     SalID INT NOT NULL,
     Navn VARCHAR(50) NOT NULL,
     MaksPlasser INT,
@@ -22,10 +14,8 @@ CREATE TABLE Teaterstykke (
     Tittel VARCHAR(50) NOT NULL,
     Forfatter VARCHAR(50),
     SalID INT NOT NULL,
-    SesongID INT NOT NULL,
     PRIMARY KEY (TeaterstykkeID),
-    FOREIGN KEY (SalID) REFERENCES TeaterSal(SalID) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (SesongID) REFERENCES Teatersesong(SesongID) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (SalID) REFERENCES Teatersal(SalID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 DROP TABLE IF EXISTS Forestilling;
@@ -37,46 +27,66 @@ CREATE TABLE Forestilling (
     FOREIGN KEY (TeaterstykkeID) REFERENCES Teaterstykke(TeaterstykkeID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+DROP TABLE IF EXISTS Pristyper;
+CREATE TABLE Pristyper (
+    TeaterstykkeID INT NOT NULL,
+    Type VARCHAR(50) NOT NULL,
+    Pris INT NOT NULL,
+    PRIMARY KEY (TeaterstykkeID, Type),
+    FOREIGN KEY (TeaterstykkeID) REFERENCES Teaterstykke(TeaterstykkeID) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 DROP TABLE IF EXISTS Stol;
 CREATE TABLE Stol (
     SalID INT NOT NULL,
     RadNr INT NOT NULL,
     SeteNr INT NOT NULL,
     OmraadeNavn VARCHAR(50) NOT NULL DEFAULT 'Standard',
-    PRIMARY KEY (SalID, SeteNr, RadNr, Omraadenavn),
-    FOREIGN KEY (SalID) REFERENCES TeaterSal(SalID) ON DELETE CASCADE ON UPDATE CASCADE
+    PRIMARY KEY (SalID, RadNr, SeteNr, Omraadenavn),
+    FOREIGN KEY (SalID) REFERENCES Teatersal(SalID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-DROP TABLE IF EXISTS Billett;
-CREATE TABLE Billett (
-    BillettID INT NOT NULL,
-    Type VARCHAR(50) NOT NULL,
-    Pris INT NOT NULL,
+DROP TABLE IF EXISTS ReservererForestilling;
+CREATE TABLE ReservererForestilling (
     KjopID INT NOT NULL,
-    TeaterStykkeID INT NOT NULL,
+    TeaterstykkeID INT NOT NULL,
     ForestillingsDato DATE NOT NULL,
     ForestillingsTidspunkt TIME NOT NULL,
+    PRIMARY KEY (KjopID),
+    FOREIGN KEY (TeaterstykkeID, ForestillingsDato, ForestillingsTidspunkt) 
+    REFERENCES Forestilling(TeaterstykkeID, Dato, Tidspunkt) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+DROP TABLE IF EXISTS ReservererForestilling;
+CREATE TABLE ReservererForestilling (
+    KjopID INT NOT NULL,
+    BillettNr INT NOT NULL,
     SalID INT NOT NULL,
     RadNr INT NOT NULL,
     SeteNr INT NOT NULL,
     OmraadeNavn VARCHAR(50) NOT NULL DEFAULT 'Standard',
-    PRIMARY KEY (BillettID),
-    FOREIGN KEY (KjopID) REFERENCES Billettkjop(KjopID) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (TeaterStykkeID) REFERENCES Teaterstykke(TeaterstykkeID) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (TeaterStykkeID, ForestillingsDato, ForestillingsTidspunkt) REFERENCES Forestilling(TeaterstykkeID, Dato, Tidspunkt) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (SalID) REFERENCES TeaterSal(SalID) ON DELETE CASCADE ON UPDATE CASCADE, --Burde undersøke om denne er nødvendig
-    FOREIGN KEY (SalID, RadNr, SeteNr, OmraadeNavn) REFERENCES Stol(SalID, RadNr, SeteNr, OmraadeNavn) ON DELETE CASCADE ON UPDATE CASCADE
+    PRIMARY KEY (KjopID, BillettNr),
+    FOREIGN KEY (SalID, RadNr, SeteNr, Omraadenavn) 
+    REFERENCES Stol(SalID, RedNr, SeteNr, Omraadenavn) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-DROP TABLE IF EXISTS Billettkjop;
-CREATE TABLE Billettkjop (
+DROP TABLE IF EXISTS Teaterbillett;
+CREATE TABLE TeaterBillett (
     KjopID INT NOT NULL,
-    Dato DATE NOT NULL,
-    Tid TIME NOT NULL,
-    Totalpris INT NOT NULL,
-    KundeID INT NOT NULL,
+    TeaterstykkeID INT NOT NULL,
     PRIMARY KEY (KjopID),
-    FOREIGN KEY (KundeID) REFERENCES KundeProfil(KundeID) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (KjopID) REFERENCES Billettkjop(KjopID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (TeaterstykkeID) REFERENCES Pristyper(TeaterstykkeID) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+DROP TABLE IF EXISTS Billettype;
+CREATE TABLE Billettype (
+    KjopID INT NOT NULL,
+    BillettNr INT NOT NULL,
+    Type VARCHAR(50) NOT NULL,
+    PRIMARY KEY (KjopID, BillettNr),
+    FOREIGN KEY (KjopID) REFERENCES Billettkjop(KjopID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (Type) REFERENCES Pristyper(Type) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 DROP TABLE IF EXISTS KundeProfil;
@@ -102,7 +112,7 @@ CREATE TABLE Oppgave (
     OppgaveID INT NOT NULL,
     Tittel VARCHAR(50) NOT NULL,
     Beskrivelse TEXT,
-    TeaterstykkeID INT NOT NULL, 
+    TeaterstykkeID INT, 
     PRIMARY KEY (OppgaveID),
     FOREIGN KEY (TeaterstykkeID) REFERENCES Teaterstykke(TeaterstykkeID) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -127,7 +137,7 @@ CREATE TABLE Skuespiller (
 DROP TABLE IF EXISTS Rolle;
 CREATE TABLE Rolle (
     RolleID INT NOT NULL,
-    Navn VARCHAR(50), --Usikker på om NOT NULL, må se hvordan pyhton logikken fungerer
+    Navn VARCHAR(50),
     SkuespillerID INT NOT NULL,
     PRIMARY KEY (RolleID),
     FOREIGN KEY (SkuespillerID) REFERENCES Skuespiller(SkuespillerID) ON DELETE CASCADE ON UPDATE CASCADE
@@ -157,7 +167,6 @@ CREATE TABLE SpillesIAkt (
     AktNr INT NOT NULL,
     RolleID INT NOT NULL,
     PRIMARY KEY (TeaterstykkeID, AktNr, RolleID),
-    FOREIGN KEY (TeaterstykkeID) REFERENCES Teaterstykke(TeaterstykkeID) ON DELETE CASCADE ON UPDATE CASCADE, 
     FOREIGN KEY (TeaterstykkeID, AktNr) REFERENCES Akt(TeaterstykkeID,AktNr) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (RolleID) REFERENCES Rolle(RolleID) ON DELETE CASCADE ON UPDATE CASCADE
 );
