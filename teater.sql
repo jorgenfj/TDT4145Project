@@ -155,9 +155,7 @@ DROP TABLE IF EXISTS Rolle;
 CREATE TABLE Rolle (
     RolleID INT NOT NULL,
     Navn VARCHAR(50),
-    SkuespillerID INT NOT NULL,
-    PRIMARY KEY (RolleID),
-    FOREIGN KEY (SkuespillerID) REFERENCES Skuespiller(SkuespillerID) ON DELETE CASCADE ON UPDATE CASCADE
+    PRIMARY KEY (RolleID)
 );
 
 DROP TABLE IF EXISTS SpillesAv;
