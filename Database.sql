@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS Teatersal;
 CREATE TABLE Teatersal (
     SalID INT NOT NULL,
     Navn VARCHAR(50) NOT NULL,
-    MaksPlasser INT,
+    MaksPlasser INT NOT NULL DEFAULT 0,
     PRIMARY KEY (SalID)
 );
 
