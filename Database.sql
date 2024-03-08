@@ -20,9 +20,9 @@ CREATE TABLE Teaterstykke (
 
 DROP TABLE IF EXISTS Forestilling;
 CREATE TABLE Forestilling (
-    TeaterstykkeID INT,
-    Dato DATE,
-    Tidspunkt TIME,
+    TeaterstykkeID INT NOT NULL,
+    Dato DATE NOT NULL,
+    Tidspunkt TIME NOT NULL,
     PRIMARY KEY (TeaterstykkeID, Dato, Tidspunkt),
     FOREIGN KEY (TeaterstykkeID) REFERENCES Teaterstykke(TeaterstykkeID) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -53,6 +53,7 @@ CREATE TABLE ReservererForestilling (
     ForestillingsDato DATE NOT NULL,
     ForestillingsTidspunkt TIME NOT NULL,
     PRIMARY KEY (KjopID),
+    FOREIGN KEY (KjopID) REFERENCES Teaterbillett(KjopID) ON DELETE CASCADE ON UPDATE CASCADE
     FOREIGN KEY (TeaterstykkeID, ForestillingsDato, ForestillingsTidspunkt) 
     REFERENCES Forestilling(TeaterstykkeID, Dato, Tidspunkt) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -66,6 +67,8 @@ CREATE TABLE ReservererStol (
     SeteNr INT NOT NULL,
     OmraadeNavn VARCHAR(50) NOT NULL DEFAULT 'Standard',
     PRIMARY KEY (KjopID, BillettNr),
+    FOREIGN KEY (KjopID, BillettNr) 
+    REFERENCES Billettype(KjopID, BillettNr) ON DELETE CASCADE ON UPDATE CASCADE
     FOREIGN KEY (SalID, RadNr, SeteNr, Omraadenavn) 
     REFERENCES Stol(SalID, RedNr, SeteNr, Omraadenavn) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -129,7 +132,7 @@ CREATE TABLE UtforesAv (
 
 DROP TABLE IF EXISTS Skuespiller;
 CREATE TABLE Skuespiller (
-    SkuespillerID INTEGER NOT NULL,
+    SkuespillerID INT NOT NULL,
     Navn VARCHAR(50) NOT NULL,
     PRIMARY KEY (SkuespillerID)
 );
