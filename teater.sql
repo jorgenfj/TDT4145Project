@@ -1,5 +1,7 @@
 BEGIN TRANSACTION;
 
+PRAGMA encoding = "UTF-8";
+
 DROP TABLE IF EXISTS Teatersal;
 CREATE TABLE Teatersal (
     SalID INT NOT NULL,
