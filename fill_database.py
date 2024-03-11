@@ -2,7 +2,7 @@ import sqlite3
 from scan_seats_hovedscenen import insert_seats_hovedscenen
 from scan_seats_gamle_scene import insert_seats_gamle_scene
 
-def fillDatabase():
+def fill_database():
   con = sqlite3.connect("teater.db")
   cursor = con.cursor()
 #   cursor.execute("""PRAGMA encoding = "UTF-8" """)
@@ -192,7 +192,7 @@ def fillDatabase():
 
 
   # Kundeprofiler
-  cursor.execute("INSERT INTO KundeProfil VALUES (1, 99999999, 'Testbruker', 'Testveien 1')")
+  cursor.execute("INSERT INTO KundeProfil VALUES (0, 99999999, 'Testbruker', 'Testveien 1')")
 
   # Involverte
   # Kongsemnene
@@ -237,4 +237,4 @@ def fillDatabase():
   cursor.execute("INSERT INTO UtforesAv VALUES (9, 9)")
   
   con.commit()
-fillDatabase()
+# fill_database()

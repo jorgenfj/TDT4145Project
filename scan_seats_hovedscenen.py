@@ -7,7 +7,7 @@ cursor = con.cursor()
 file_path = '/home/jorgen/spring2024/datdat/TDT4145Project/hovedscenen.txt'
 SalID = 1
 BillettNr = 0
-KjopID = 1  
+KjopID = 0 
 
 def scan_seats_hovedscenen():
     try:
@@ -51,42 +51,39 @@ def get_seats_hovedscenen():
     seats.extend(get_seats_parkett())
     return seats
 
-def  insert_seats_hovedscenen(cursor):
+def insert_seats_hovedscenen(cursor):
     seats = get_seats_hovedscenen()
     for seat in seats:
         cursor.execute(f"INSERT INTO Stol VALUES ({seat})")
 
 
-def parse_seats(file_contents):
+def insert_tickets_hovedscenen():
+    file_contents = scan_seats_hovedscenen()
     lines = file_contents.split('\n')
-    parkett_seats_lines = lines[7:]   # Assuming these are the correct indices for Parkett seats
-
-    # Process Parkett seats in reverse order
-    total_rows = len(parkett_seats_lines)
+    parkett_seats_lines = lines[7:]
+    parkett_seats_lines = parkett_seats_lines[::-1]
+    cursor.execute(f"INSERT INTO Teaterbillett VALUES ({KjopID}, 1)")
+    
     for row, line in enumerate(parkett_seats_lines):
-        reversed_row = total_rows - row  # Calculate the reversed row number
         for col, seat in enumerate(line.strip()):
             if seat == '1':
-                seat_num = (reversed_row - 1) * 28 + col + 1  # Adjust seat numbering based on reversed order
-                reserved_seat = {"SalID": SalID, "RadNr": reversed_row, "SeteNr": seat_num, "OmraadeNavn": "Parkett"}
+                seat_num = (row) * 28 + col + 1  
+                reserved_seat = {"SalID": SalID, "RadNr": row, "SeteNr": seat_num, "OmraadeNavn": "Parkett"}
                 insert_billett(reserved_seat)
+    con.commit()
 
 
 def insert_billett(seat):
-    global BillettNr  # Use the global counter
-    # Increment BillettNr for each new billett
+    global BillettNr  
     BillettNr += 1
     
     try:
-        # Adjust the INSERT statement to include KjopID and BillettNr
+        cursor.execute(f"INSERT INTO Billettype VALUES ({KjopID}, {BillettNr}, 1)")
         cursor.execute("INSERT INTO ReservererStol (KjopID, BillettNr, SalID, RadNr, SeteNr, OmraadeNavn) VALUES (?, ?, ?, ?, ?, ?)",
                        (KjopID, BillettNr, seat["SalID"], seat["RadNr"], seat["SeteNr"], seat["OmraadeNavn"]))
     except sqlite3.Error as e:
         print("An error occurred:", e)
 
-# insert_seats_hovedscenen(cursor)
-# parse_seats(file_contents)
-# con.commit()
 # Make sure you open the database connection and create a cursor before calling these functions
 # And ensure the database connection is closed after operations are
 
