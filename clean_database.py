@@ -1,6 +1,5 @@
 import sqlite3
 from fill_database import fill_database
-from scan_seats_hovedscenen import insert_tickets_hovedscenen
 
 db_path = 'teater.db'
 con = sqlite3.connect(db_path)
@@ -26,4 +25,3 @@ def delete_records_from_tables(db_path, tables):
 
 delete_records_from_tables(db_path, tables)
 fill_database()
-insert_tickets_hovedscenen()

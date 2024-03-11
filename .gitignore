@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# SQLite
+*.db
+*.db-journal
+
+# IDE/Editor specific
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Compiled files
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Miscellaneous
+.DS_Store

@@ -1,13 +1,8 @@
-import sqlite3
-
-con = sqlite3.connect('teater.db')
-
-cursor = con.cursor()
-
-file_path = '/home/jorgen/spring2024/datdat/TDT4145Project/hovedscenen.txt'
+file_path = 'hovedscenen.txt'
 SalID = 1
 BillettNr = 0
 KjopID = 0 
+tid = '19:00:00'
 
 def scan_seats_hovedscenen():
     try:
@@ -17,9 +12,6 @@ def scan_seats_hovedscenen():
     except FileNotFoundError:
         print("File not found.")
     
-# file_contents = scan_seats_hovedscenen()
-
-
 def get_date(file_contents):
     date = file_contents.split('\n')[0]
     date = date[5:]
@@ -57,32 +49,30 @@ def insert_seats_hovedscenen(cursor):
         cursor.execute(f"INSERT INTO Stol VALUES ({seat})")
 
 
-def insert_tickets_hovedscenen():
+def insert_tickets_hovedscenen(cursor):
     file_contents = scan_seats_hovedscenen()
     lines = file_contents.split('\n')
+    lines = [line for line in lines if line.strip()]
     parkett_seats_lines = lines[7:]
     parkett_seats_lines = parkett_seats_lines[::-1]
+    cursor.execute(f"INSERT INTO Billettkjop VALUES ({KjopID}, 1, 0, 0, 0)")
+    cursor.execute(f"INSERT INTO ReservererForestilling VALUES ({KjopID}, 1, '{get_date(file_contents)}', '{tid}')") 
     cursor.execute(f"INSERT INTO Teaterbillett VALUES ({KjopID}, 1)")
     
     for row, line in enumerate(parkett_seats_lines):
         for col, seat in enumerate(line.strip()):
             if seat == '1':
                 seat_num = (row) * 28 + col + 1  
-                reserved_seat = {"SalID": SalID, "RadNr": row, "SeteNr": seat_num, "OmraadeNavn": "Parkett"}
-                insert_billett(reserved_seat)
-    con.commit()
+                reserved_seat = {"SalID": SalID, "RadNr": row+1, "SeteNr": seat_num, "OmraadeNavn": "Parkett"}
+                insert_billett(reserved_seat, cursor)
 
 
-def insert_billett(seat):
+def insert_billett(seat, cursor):
     global BillettNr  
     BillettNr += 1
-    
-    try:
-        cursor.execute(f"INSERT INTO Billettype VALUES ({KjopID}, {BillettNr}, 1)")
-        cursor.execute("INSERT INTO ReservererStol (KjopID, BillettNr, SalID, RadNr, SeteNr, OmraadeNavn) VALUES (?, ?, ?, ?, ?, ?)",
-                       (KjopID, BillettNr, seat["SalID"], seat["RadNr"], seat["SeteNr"], seat["OmraadeNavn"]))
-    except sqlite3.Error as e:
-        print("An error occurred:", e)
+    cursor.execute(f"INSERT INTO Billettype VALUES ({KjopID}, {BillettNr}, 1)")
+    cursor.execute("INSERT INTO ReservererStol (KjopID, BillettNr, SalID, RadNr, SeteNr, OmraadeNavn) VALUES (?, ?, ?, ?, ?, ?)",
+                    (KjopID, BillettNr, seat["SalID"], seat["RadNr"], seat["SeteNr"], seat["OmraadeNavn"]))
 
 # Make sure you open the database connection and create a cursor before calling these functions
 # And ensure the database connection is closed after operations are

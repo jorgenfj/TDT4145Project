@@ -1,6 +1,7 @@
 import sqlite3
-from scan_seats_hovedscenen import insert_seats_hovedscenen
+from scan_seats_hovedscenen import insert_seats_hovedscenen, insert_tickets_hovedscenen
 from scan_seats_gamle_scene import insert_seats_gamle_scene
+
 
 def fill_database():
   con = sqlite3.connect("teater.db")
@@ -186,13 +187,16 @@ def fill_database():
   cursor.execute("INSERT INTO Pristyper VALUES (2, 'STUDENT', 220)")
   cursor.execute("INSERT INTO Pristyper VALUES (2, 'BARN', 220)")
 
+  # Kundeprofiler
+  cursor.execute("INSERT INTO KundeProfil VALUES (0, 99999999, 'Testbruker', 'Testveien 1')")
+
   # Stoler
   insert_seats_hovedscenen(cursor)
   insert_seats_gamle_scene(cursor)
 
+  # Billetter
+  insert_tickets_hovedscenen(cursor)
 
-  # Kundeprofiler
-  cursor.execute("INSERT INTO KundeProfil VALUES (0, 99999999, 'Testbruker', 'Testveien 1')")
 
   # Involverte
   # Kongsemnene
