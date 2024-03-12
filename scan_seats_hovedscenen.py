@@ -56,8 +56,8 @@ def insert_tickets_hovedscenen(cursor):
     parkett_seats_lines = lines[7:]
     parkett_seats_lines = parkett_seats_lines[::-1]
     cursor.execute(f"INSERT INTO Billettkjop VALUES ({KjopID}, 1, 0, 0, 0)")
-    cursor.execute(f"INSERT INTO ReservererForestilling VALUES ({KjopID}, 1, '{get_date(file_contents)}', '{tid}')") 
     cursor.execute(f"INSERT INTO Teaterbillett VALUES ({KjopID}, 1)")
+    cursor.execute(f"INSERT INTO ReservererForestilling VALUES ({KjopID}, 1, '{get_date(file_contents)}', '{tid}')") 
     
     for row, line in enumerate(parkett_seats_lines):
         for col, seat in enumerate(line.strip()):
@@ -70,11 +70,9 @@ def insert_tickets_hovedscenen(cursor):
 def insert_billett(seat, cursor):
     global BillettNr  
     BillettNr += 1
-    cursor.execute(f"INSERT INTO Billettype VALUES ({KjopID}, {BillettNr}, 1)")
-    cursor.execute("INSERT INTO ReservererStol (KjopID, BillettNr, SalID, RadNr, SeteNr, OmraadeNavn) VALUES (?, ?, ?, ?, ?, ?)",
+    cursor.execute(f"INSERT INTO Billettype VALUES ({KjopID}, {BillettNr}, 'ORDINAER')")
+    cursor.execute(f"INSERT INTO ReservererStol (KjopID, BillettNr, SalID, RadNr, SeteNr, OmraadeNavn) VALUES (?, ?, ?, ?, ?, ?)",
                     (KjopID, BillettNr, seat["SalID"], seat["RadNr"], seat["SeteNr"], seat["OmraadeNavn"]))
 
-# Make sure you open the database connection and create a cursor before calling these functions
-# And ensure the database connection is closed after operations are
 
 

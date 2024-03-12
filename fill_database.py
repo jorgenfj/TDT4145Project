@@ -1,10 +1,12 @@
 import sqlite3
-from scan_seats_hovedscenen import insert_seats_hovedscenen, insert_tickets_hovedscenen
-from scan_seats_gamle_scene import insert_seats_gamle_scene
+# from scan_seats_hovedscenen import insert_seats_hovedscenen, insert_tickets_hovedscenen
+# from scan_seats_gamle_scene import insert_seats_gamle_scene, insert_tickets_gamle_scene
+from scan_seat_files import scan_seats_gamle_scene, scan_seats_hovedscenen
 
 
 def fill_database():
   con = sqlite3.connect("teater.db")
+  con.execute('PRAGMA foreign_keys = ON')
   cursor = con.cursor()
 #   cursor.execute("""PRAGMA encoding = "UTF-8" """)
 
@@ -175,28 +177,31 @@ def fill_database():
   cursor.execute("INSERT INTO Forestilling VALUES (2, '2024-02-13', '18:30:00')")
   cursor.execute("INSERT INTO Forestilling VALUES (2, '2024-02-14', '18:30:00')")
 
-  # Pristyper
+  # Pristype
   # Kongsemnene
-  cursor.execute("INSERT INTO Pristyper VALUES (1, 'ORDINAER', 450)")
-  cursor.execute("INSERT INTO Pristyper VALUES (1, 'HONNOR', 380)")
-  cursor.execute("INSERT INTO Pristyper VALUES (1, 'STUDENT', 280)")
+  cursor.execute("INSERT INTO Pristype VALUES (1, 'ORDINAER', 450)")
+  cursor.execute("INSERT INTO Pristype VALUES (1, 'HONNOR', 380)")
+  cursor.execute("INSERT INTO Pristype VALUES (1, 'STUDENT', 280)")
 
   # Størst av alt er kjærligheten
-  cursor.execute("INSERT INTO Pristyper VALUES (2, 'ORDINAER', 350)")
-  cursor.execute("INSERT INTO Pristyper VALUES (2, 'HONNOR', 300)")
-  cursor.execute("INSERT INTO Pristyper VALUES (2, 'STUDENT', 220)")
-  cursor.execute("INSERT INTO Pristyper VALUES (2, 'BARN', 220)")
+  cursor.execute("INSERT INTO Pristype VALUES (2, 'ORDINAER', 350)")
+  cursor.execute("INSERT INTO Pristype VALUES (2, 'HONNOR', 300)")
+  cursor.execute("INSERT INTO Pristype VALUES (2, 'STUDENT', 220)")
+  cursor.execute("INSERT INTO Pristype VALUES (2, 'BARN', 220)")
 
   # Kundeprofiler
   cursor.execute("INSERT INTO KundeProfil VALUES (0, 99999999, 'Testbruker', 'Testveien 1')")
 
   # Stoler
-  insert_seats_hovedscenen(cursor)
-  insert_seats_gamle_scene(cursor)
+  # insert_seats_hovedscenen(cursor)
+  # insert_seats_gamle_scene(cursor)
 
   # Billetter
-  insert_tickets_hovedscenen(cursor)
-
+  # insert_tickets_hovedscenen(cursor)
+  # insert_tickets_gamle_scene(cursor)
+ 
+  scan_seats_hovedscenen(cursor)
+  scan_seats_gamle_scene(cursor)
 
   # Involverte
   # Kongsemnene
