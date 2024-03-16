@@ -4,6 +4,7 @@ import re
 
 con = sqlite3.connect("teater.db")
 cursor = con.cursor()
+cursor.execute("PRAGMA encoding = 'UTF-8';")
 
 def spor_om_dato():
     while(True):

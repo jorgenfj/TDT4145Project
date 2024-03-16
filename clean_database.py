@@ -5,6 +5,7 @@ def create_database_from_sql_script(db_file, sql_script_file):
     # Connect to the SQLite database (this will create the database if it doesn't exist)
     con = sqlite3.connect(db_file)
     cursor = con.cursor()
+    cursor.execute("PRAGMA encoding = 'UTF-8';")
     
     # Read SQL script
     with open(sql_script_file, 'r') as file:
