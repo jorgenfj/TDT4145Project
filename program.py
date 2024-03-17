@@ -1,4 +1,3 @@
-from prettytable import PrettyTable
 import sqlite3
 
 con = sqlite3.connect("teater.db")
@@ -14,22 +13,21 @@ def login():
       print("Velg login eller registrer bruker \n")
       print("1 - Login\n")
       print("2 - Registrer bruker\n")
-      choice = input()
+      valg = input()
       
-      if(choice == '1'):
+      if(valg == '1'):
         mobilnummer = input("mobilnummer: \n")
 
         cursor.execute(f"SELECT EXISTS(SELECT 1 FROM KundeProfil WHERE Mobilnummer = {mobilnummer})")
-        existsBool = cursor.fetchone()[0]
-        print(existsBool)
+        (bruker_eksisterer) = cursor.fetchone()[0]
 
-        if(existsBool):
+        if((bruker_eksisterer)):
            break
           
         else:
            print("Bruker eksisterer ikke\n")
 
-      elif(choice == '2'):
+      elif(valg == '2'):
         mobilnummer = input("Mobilnummer: ")
         navn = input("Navn: ")
         adresse = input("Adresse: ")

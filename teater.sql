@@ -117,6 +117,8 @@ INSERT INTO Rolle (Navn) VALUES ('Gregorius Jonssønn');
 INSERT INTO Rolle (Navn) VALUES ('Margrete');
 INSERT INTO Rolle (Navn) VALUES ('Biskop Nikolas');
 INSERT INTO Rolle (Navn) VALUES ('Peter');
+
+-- Størst av alt er kjærligheten
 INSERT INTO Rolle (Navn) VALUES ('Sunniva Du Mond Nordal');
 INSERT INTO Rolle (Navn) VALUES ('Jo Saberniak');
 INSERT INTO Rolle (Navn) VALUES ('Marte M. Steinholt');
@@ -144,6 +146,7 @@ INSERT INTO SpillesAv VALUES (6, 4);
 INSERT INTO SpillesAv VALUES (6, 5);
 INSERT INTO SpillesAv VALUES (7, 13);
 INSERT INTO SpillesAv VALUES (8, 11);
+INSERT INTO SpillesAv VALUES (9, 9);
 INSERT INTO SpillesAv VALUES (10, 6);
 INSERT INTO SpillesAv VALUES (11, 3);
 INSERT INTO SpillesAv VALUES (11, 2);
