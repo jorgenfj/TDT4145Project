@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS Teatersal;
 CREATE TABLE Teatersal (
     SalID INTEGER PRIMARY KEY,
     Navn VARCHAR(50) NOT NULL,
-    MaksPlasser INT NOT NULL DEFAULT 0
+    MaksPlasser INTEGER NOT NULL DEFAULT 0
 );
 
 INSERT INTO Teatersal (Navn, MaksPlasser) VALUES ('Hovedscenen', 520);
@@ -15,7 +15,7 @@ CREATE TABLE Teaterstykke (
     TeaterstykkeID INTEGER PRIMARY KEY,
     Tittel VARCHAR(50) NOT NULL,
     Forfatter VARCHAR(50),
-    SalID INT NOT NULL,
+    SalID INTEGER NOT NULL,
     FOREIGN KEY (SalID) REFERENCES Teatersal(SalID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -24,7 +24,7 @@ INSERT INTO Teaterstykke (Tittel, Forfatter, SalID) VALUES ('Størst av alt er k
 
 DROP TABLE IF EXISTS Forestilling;
 CREATE TABLE Forestilling (
-    TeaterstykkeID INT NOT NULL,
+    TeaterstykkeID INTEGER NOT NULL,
     Dato DATE NOT NULL,
     Tidspunkt TIME NOT NULL,
     PRIMARY KEY (TeaterstykkeID, Dato, Tidspunkt),
@@ -50,8 +50,8 @@ INSERT INTO Forestilling (TeaterstykkeID, Dato, Tidspunkt) VALUES (2, '2024-02-1
 
 DROP TABLE IF EXISTS Akt;
 CREATE TABLE Akt (
-    TeaterstykkeID INT NOT NULL,
-    AktNr INT NOT NULL,
+    TeaterstykkeID INTEGER NOT NULL,
+    AktNr INTEGER NOT NULL,
     Navn VARCHAR(50),
     PRIMARY KEY (TeaterstykkeID, AktNr),
     FOREIGN KEY (TeaterstykkeID) 
@@ -129,8 +129,8 @@ INSERT INTO Rolle (Navn) VALUES ('Åsmund Flaten');
 
 DROP TABLE IF EXISTS SpillesAv;
 CREATE TABLE SpillesAV (
-    SkuespillerID INT NOT NULL,
-    RolleID INT NOT NULL,
+    SkuespillerID INTEGER NOT NULL,
+    RolleID INTEGER NOT NULL,
     PRIMARY KEY (SkuespillerID, RolleID),
     FOREIGN KEY (SkuespillerID) REFERENCES Skuespiller(SkuespillerID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (RolleID) REFERENCES Rolle(RolleID) ON DELETE CASCADE ON UPDATE CASCADE
@@ -163,9 +163,9 @@ INSERT INTO SpillesAv VALUES (19, 21);
 
 DROP TABLE IF EXISTS SpillesIAkt;
 CREATE TABLE SpillesIAkt (
-    TeaterstykkeID INT NOT NULL,
-    AktNr INT NOT NULL,
-    RolleID INT NOT NULL,
+    TeaterstykkeID INTEGER NOT NULL,
+    AktNr INTEGER NOT NULL,
+    RolleID INTEGER NOT NULL,
     PRIMARY KEY (TeaterstykkeID, AktNr, RolleID),
     FOREIGN KEY (TeaterstykkeID, AktNr) 
     REFERENCES Akt(TeaterstykkeID,AktNr) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -275,8 +275,8 @@ INSERT INTO Oppgave (Tittel, Beskrivelse, TeaterstykkeID) VALUES ('Dramaturg', '
 
 DROP TABLE IF EXISTS UtforesAv;
 CREATE TABLE UtforesAv (
-    InvolvertID INT NOT NULL,
-    OppgaveID INT NOT NULL,
+    InvolvertID INTEGER NOT NULL,
+    OppgaveID INTEGER NOT NULL,
     PRIMARY KEY (InvolvertID, OppgaveID),
     FOREIGN KEY (InvolvertID) REFERENCES Involvert(InvolvertID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (OppgaveID) REFERENCES Oppgave(OppgaveID) ON DELETE CASCADE ON UPDATE CASCADE
@@ -297,9 +297,9 @@ INSERT INTO UtforesAv VALUES (9, 9);
 
 DROP TABLE IF EXISTS Pristype;
 CREATE TABLE Pristype (
-    TeaterstykkeID INT NOT NULL,
+    TeaterstykkeID INTEGER NOT NULL,
     Type VARCHAR(50) NOT NULL,
-    Pris INT NOT NULL,
+    Pris INTEGER NOT NULL,
     PRIMARY KEY (TeaterstykkeID, Type),
     FOREIGN KEY (TeaterstykkeID) 
     REFERENCES Teaterstykke(TeaterstykkeID) ON DELETE CASCADE ON UPDATE CASCADE
@@ -319,7 +319,7 @@ INSERT INTO Pristype VALUES (2, 'BARN', 220);
 DROP TABLE IF EXISTS KundeProfil;
 CREATE TABLE KundeProfil (
     KundeID INTEGER PRIMARY KEY,
-    Mobilnummer INT NOT NULL,
+    Mobilnummer INTEGER NOT NULL,
     Navn VARCHAR(50) NOT NULL,
     Adresse VARCHAR(50) NOT NULL
 );
@@ -329,9 +329,9 @@ INSERT INTO KundeProfil VALUES (0, 99999999, 'Testbruker', 'Testveien 1');
 
 DROP TABLE IF EXISTS Stol;
 CREATE TABLE Stol (
-    SalID INT NOT NULL,
-    RadNr INT NOT NULL,
-    SeteNr INT NOT NULL,
+    SalID INTEGER NOT NULL,
+    RadNr INTEGER NOT NULL,
+    SeteNr INTEGER NOT NULL,
     OmraadeNavn VARCHAR(50) NOT NULL DEFAULT 'Standard',
     PRIMARY KEY (SalID, RadNr, SeteNr, Omraadenavn),
     FOREIGN KEY (SalID) REFERENCES Teatersal(SalID) ON DELETE CASCADE ON UPDATE CASCADE
@@ -339,8 +339,8 @@ CREATE TABLE Stol (
 
 DROP TABLE IF EXISTS ReservererForestilling;
 CREATE TABLE ReservererForestilling (
-    KjopID INT NOT NULL,
-    TeaterstykkeID INT NOT NULL,
+    KjopID INTEGER NOT NULL,
+    TeaterstykkeID INTEGER NOT NULL,
     ForestillingsDato DATE NOT NULL,
     ForestillingsTidspunkt TIME NOT NULL,
     PRIMARY KEY (KjopID),
@@ -351,11 +351,11 @@ CREATE TABLE ReservererForestilling (
 
 DROP TABLE IF EXISTS ReservererStol;
 CREATE TABLE ReservererStol (
-    KjopID INT NOT NULL,
-    BillettNr INT NOT NULL,
-    SalID INT NOT NULL,
-    RadNr INT NOT NULL,
-    SeteNr INT NOT NULL,
+    KjopID INTEGER NOT NULL,
+    BillettNr INTEGER NOT NULL,
+    SalID INTEGER NOT NULL,
+    RadNr INTEGER NOT NULL,
+    SeteNr INTEGER NOT NULL,
     OmraadeNavn VARCHAR(50) NOT NULL DEFAULT 'Standard',
     PRIMARY KEY (KjopID, BillettNr),
     FOREIGN KEY (KjopID, BillettNr) 
@@ -366,8 +366,8 @@ CREATE TABLE ReservererStol (
 
 DROP TABLE IF EXISTS Teaterbillett;
 CREATE TABLE TeaterBillett (
-    KjopID INT NOT NULL,
-    TeaterstykkeID INT NOT NULL,
+    KjopID INTEGER NOT NULL,
+    TeaterstykkeID INTEGER NOT NULL,
     PRIMARY KEY (KjopID),
     FOREIGN KEY (KjopID) REFERENCES Billettkjop(KjopID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (TeaterstykkeID) REFERENCES Teaterstykke(TeaterstykkeID) ON DELETE CASCADE ON UPDATE CASCADE
@@ -375,8 +375,8 @@ CREATE TABLE TeaterBillett (
 
 DROP TABLE IF EXISTS Billettype;
 CREATE TABLE Billettype (
-    KjopID INT NOT NULL,
-    BillettNr INT NOT NULL,
+    KjopID INTEGER NOT NULL,
+    BillettNr INTEGER NOT NULL,
     Type VARCHAR(50) NOT NULL,
     PRIMARY KEY (KjopID, BillettNr),
     FOREIGN KEY (KjopID) REFERENCES Teaterbillett(KjopID) ON DELETE CASCADE ON UPDATE CASCADE
@@ -384,11 +384,11 @@ CREATE TABLE Billettype (
 
 DROP TABLE IF EXISTS Billettkjop;
 CREATE TABLE Billettkjop (
-    KjopID INT NOT NULL,
+    KjopID INTEGER NOT NULL,
     Dato DATE NOT NULL,
     Tid TIME NOT NULL,
-    Totalpris INT NOT NULL,
-    KundeID INT NOT NULL,
+    Totalpris INTEGER NOT NULL,
+    KundeID INTEGER NOT NULL,
     PRIMARY KEY (KjopID),
     FOREIGN KEY (KundeID) REFERENCES KundeProfil(KundeID) ON DELETE CASCADE ON UPDATE CASCADE
 );

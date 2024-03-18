@@ -27,6 +27,6 @@ def create_database_from_sql_script(db_file, sql_script_file):
 db_file = 'teater.db'
 sql_script_file = 'teater.sql'
 
-# Create the database and tables
-create_database_from_sql_script(db_file, sql_script_file)
-fill_database()
+    # Create the database and tables
+# create_database_from_sql_script(db_file, sql_script_file)
+# fill_database()

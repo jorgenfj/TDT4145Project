@@ -14,7 +14,8 @@ def mest_solgt_forestilling():
                    AND F.Dato = R.ForestillingsDato 
                    LEFT JOIN ReservererStol as S ON R.KjopID = S.KjopID 
                    GROUP BY T.TeaterstykkeID, F.Dato 
-                   ORDER BY SolgtePlasser DESC''')
+                   ORDER BY SolgtePlasser DESC
+                   ''')
     #dersom man bytter LEFT til INNER får man kun forestillinger som har solgt minst 1 billett
     forestillinger = cursor.fetchall()
     if(len(forestillinger) != 0):
