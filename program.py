@@ -1,39 +1,39 @@
-import sqlite3
 
-con = sqlite3.connect("teater.db")
-cursor = con.cursor()
-cursor.execute("PRAGMA encoding = 'UTF-8';")
 
-def main():
-   print("Velkommen til teateret\n")
 
-def login():
+def login(cursor):
+    while True:
+        print("\nVelg login eller registrer bruker: \n1 - Login\n2 - Registrer bruker\nq - Avslutt\n")
+        valg = input()
 
-    while(True):
-      print("Velg login eller registrer bruker \n")
-      print("1 - Login\n")
-      print("2 - Registrer bruker\n")
-      valg = input()
-      
-      if(valg == '1'):
-        mobilnummer = input("mobilnummer: \n")
+        if valg == '1':
+            mobilnummer = input("Mobilnummer: \n")
+            cursor.execute("SELECT KundeID, Mobilnummer, Navn, Adresse FROM KundeProfil WHERE Mobilnummer = ?", (mobilnummer,))
+            # Henter ut brukeren som er logget inn
+            bruker = cursor.fetchone()
 
-        cursor.execute(f"SELECT EXISTS(SELECT 1 FROM KundeProfil WHERE Mobilnummer = {mobilnummer})")
-        (bruker_eksisterer) = cursor.fetchone()[0]
+            if bruker:
+                print("Du er logget inn.")
+                return bruker[0]  # Returnerer KundeID for brukeren som er logget inn
+            else:
+                print("Bruker eksisterer ikke.\n")
 
-        if((bruker_eksisterer)):
-           break
-          
+        elif valg == '2':
+            mobilnummer = input("Mobilnummer: ")
+            navn = input("Navn: ")
+            adresse = input("Adresse: ")
+
+            cursor.execute("INSERT INTO KundeProfil (Mobilnummer, Navn, Adresse) VALUES (?, ?, ?)", (mobilnummer, navn, adresse))
+            # con.commit() commit her eller etter kjøp? ------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+            # Henter ut KundeID til den nylig registrerte brukeren
+            kundeID = cursor.lastrowid
+            print("Bruker opprettet.")
+            return kundeID  # Returnerer KundeID for den nylig opprettede brukeren
+        elif valg == 'q':
+            return 'q'
         else:
-           print("Bruker eksisterer ikke\n")
+            print("Velg et gyldig alternativ.\n")
 
-      elif(valg == '2'):
-        mobilnummer = input("Mobilnummer: ")
-        navn = input("Navn: ")
-        adresse = input("Adresse: ")
-        cursor.execute(f"INSERT INTO KundeProfil (Mobilnummer, Navn, Adresse) VALUES ('{mobilnummer}', '{navn}', '{adresse}')")
-        con.commit()
-        print("Bruker opprettet, vennligst logg inn")
-      
-      else:
-          print("Velg et gyldig alternativ")
+
+

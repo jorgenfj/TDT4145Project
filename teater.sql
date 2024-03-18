@@ -309,12 +309,16 @@ CREATE TABLE Pristype (
 INSERT INTO Pristype VALUES (1, 'ORDINAER', 450);
 INSERT INTO Pristype VALUES (1, 'HONNOR', 380);
 INSERT INTO Pristype VALUES (1, 'STUDENT', 280);
+INSERT INTO Pristype VALUES (1, 'Gruppe 10', 420);
+INSERT INTO Pristype VALUES (1, 'Gruppe honnør 10', 360);
 
 -- Pristype for Størst av alt er kjærligheten
 INSERT INTO Pristype VALUES (2, 'ORDINAER', 350);
 INSERT INTO Pristype VALUES (2, 'HONNOR', 300);
 INSERT INTO Pristype VALUES (2, 'STUDENT', 220);
 INSERT INTO Pristype VALUES (2, 'BARN', 220);
+INSERT INTO Pristype VALUES (2, 'Gruppe 10', 320);
+INSERT INTO Pristype VALUES (2, 'Gruppe honnør 10', 270);
 
 DROP TABLE IF EXISTS KundeProfil;
 CREATE TABLE KundeProfil (
