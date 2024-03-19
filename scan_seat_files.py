@@ -1,3 +1,5 @@
+## SKAL I KJØTTKVERNA
+
 hovedscenen_id = 1
 gamle_scene_id = 2
 kjop_id_hovedscenen = 1

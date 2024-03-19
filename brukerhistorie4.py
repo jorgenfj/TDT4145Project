@@ -2,11 +2,7 @@ from prettytable import PrettyTable, ALL
 import sqlite3
 import re
 
-con = sqlite3.connect("teater.db")
-cursor = con.cursor()
-cursor.execute("PRAGMA encoding = 'UTF-8';")
-
-def spor_om_dato():
+def spor_om_dato(cursor):
     print("\nHer kan du søke etter forestillinger på en gitt dato")
     print("Skriv inn en dato på formen åååå-mm-dd")
     while(True):
@@ -37,7 +33,4 @@ def spor_om_dato():
             
             else: 
                 print(f'\n\nPå {dato} finnes det foreløpig ingen forestillinger, prøv en annen dato')
-
-
-# spor_om_dato()
         

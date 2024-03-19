@@ -201,19 +201,19 @@ INSERT INTO UtforesAv VALUES (8, 8);
 INSERT INTO UtforesAv VALUES (9, 9);
 
 -- Pristype for 'Kongsemnene'
-INSERT INTO Pristype VALUES (1, 'ORDINAER', 450);
+INSERT INTO Pristype VALUES (1, 'ORDINÆR', 450);
 INSERT INTO Pristype VALUES (1, 'HONNØR', 380);
 INSERT INTO Pristype VALUES (1, 'STUDENT', 280);
 INSERT INTO Pristype VALUES (1, 'GRUPPE 10', 420);
 INSERT INTO Pristype VALUES (1, 'GRUPPE HONNØR 10', 360);
 
 -- Pristype for 'Størst av alt er kjærligheten'
-INSERT INTO Pristype VALUES (2, 'ORDINAER', 350);
-INSERT INTO Pristype VALUES (2, 'HONNOR', 300);
+INSERT INTO Pristype VALUES (2, 'ORDINÆR', 350);
+INSERT INTO Pristype VALUES (2, 'HONNØR', 300);
 INSERT INTO Pristype VALUES (2, 'STUDENT', 220);
 INSERT INTO Pristype VALUES (2, 'BARN', 220);
-INSERT INTO Pristype VALUES (2, 'Gruppe 10', 320);
-INSERT INTO Pristype VALUES (2, 'Gruppe honnør 10', 270);
+INSERT INTO Pristype VALUES (2, 'GRUPPE 10', 320);
+INSERT INTO Pristype VALUES (2, 'GRUPPE HONNØR 10', 270);
 
 -- Kundeprofiler
 INSERT INTO KundeProfil VALUES (0, 99999999, 'Testbruker', 'Testveien 1');
