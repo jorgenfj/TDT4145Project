@@ -1,7 +1,4 @@
-import sqlite3
 from prettytable import PrettyTable, ALL
-con = sqlite3.connect("teater.db")
-cursor = None
 
 def finn_alle_forestillinger():
     """
@@ -311,7 +308,6 @@ def login():
             adresse = input("Adresse: ")
 
             cursor.execute("INSERT INTO KundeProfil (Mobilnummer, Navn, Adresse) VALUES (?, ?, ?)", (mobilnummer, navn, adresse))
-            # con.commit() commit her eller etter kjøp? ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
             # Henter ut KundeID til den nylig registrerte brukeren
             kundeID = cursor.lastrowid
@@ -330,76 +326,67 @@ def utfør_kjøp(valgt_forestilling, ledige_seter, billetttype_dict, billettyper
     """
     teaterstykketittel, dato, tidspunkt, salnavn, teaterstykkeID, salID = valgt_forestilling
     # Start transaksjon
-    con.execute('BEGIN;')
-    
-    try:
-        # Opprett et nytt kjøp i Billettkjop-tabellen
-        cursor.execute('''
-            INSERT INTO Billettkjop (Dato, Tid, Totalpris, KundeID)
-            VALUES (CURRENT_DATE, CURRENT_TIME, ?, ?)
-        ''', (0, kundeID))  # Totalpris settes midlertidig til 0 og oppdateres senere
 
-        # Hent KjopID for det nyopprettede kjøpet
-        kjopID = cursor.lastrowid
+    # Opprett et nytt kjøp i Billettkjop-tabellen
+    cursor.execute('''
+        INSERT INTO Billettkjop (Dato, Tid, Totalpris, KundeID)
+        VALUES (CURRENT_DATE, CURRENT_TIME, ?, ?)
+    ''', (0, kundeID))  # Totalpris settes midlertidig til 0 og oppdateres senere
 
-        # Registrer kjøptet i Teaterbillett-tabellen
-        cursor.execute('''
-            INSERT INTO TeaterBillett (KjopID, TeaterstykkeID)
-            VALUES (?, ?)
-        ''', (kjopID, teaterstykkeID)) 
-        # Registrer kjøpet i ReservererForestilling-tabellen
-        cursor.execute('''
-            INSERT INTO ReservererForestilling (KjopID, TeaterstykkeID, ForestillingsDato, ForestillingsTidspunkt)
-            VALUES (?, ?, ?, ?)
-        ''', (kjopID, teaterstykkeID, dato, tidspunkt))
+    # Hent KjopID for det nyopprettede kjøpet
+    kjopID = cursor.lastrowid
 
-        totalpris = 0
-        billettNr = 1
-        # billetttype_til_pris er en dictionary med billettype som nøkkel og pris som verdi.
-        billettype_til_pris = {billettype[0]: billettype[1] for billettype in billettyper}
+    # Registrer kjøptet i Teaterbillett-tabellen
+    cursor.execute('''
+        INSERT INTO TeaterBillett (KjopID, TeaterstykkeID)
+        VALUES (?, ?)
+    ''', (kjopID, teaterstykkeID)) 
+    # Registrer kjøpet i ReservererForestilling-tabellen
+    cursor.execute('''
+        INSERT INTO ReservererForestilling (KjopID, TeaterstykkeID, ForestillingsDato, ForestillingsTidspunkt)
+        VALUES (?, ?, ?, ?)
+    ''', (kjopID, teaterstykkeID, dato, tidspunkt))
 
-        # Registrer hvilke seter som er reservert og tilhørende billettype
-        for sete in ledige_seter:
-            radnummer, omraade_navn, seteNr = sete
-            # Finn en billetttype som er igjen i billett_dict og reserver sete for denne billettypen
-            # Legger til prisen for billetten i totalpris og reduserer antall billetter igjen for denne billettypen
-            for billettype, antall in billetttype_dict.items():
-                if antall > 0:
-                    pris = billettype_til_pris[billettype]
-                    totalpris += pris
-                    billetttype_dict[billettype] -= 1
+    totalpris = 0
+    billettNr = 1
+    # billetttype_til_pris er en dictionary med billettype som nøkkel og pris som verdi.
+    billettype_til_pris = {billettype[0]: billettype[1] for billettype in billettyper}
 
-                    # Registrer sete og billettype
-                    cursor.execute('''
-                        INSERT INTO ReservererStol (KjopID, BillettNr, SalID, RadNr, SeteNr, OmraadeNavn)
-                        VALUES (?, ?, ?, ?, ?, ?)
-                    ''', (kjopID, billettNr, salID, radnummer, seteNr, omraade_navn))
-                    print(kjopID, billettNr, salID, radnummer, seteNr, omraade_navn)
-                    cursor.execute('''
-                        INSERT INTO Billettype (KjopID, BillettNr, Type)
-                        VALUES (?, ?, ?)
-                    ''', (kjopID, billettNr, billettype))
-                    
-                    billettNr += 1
-                    break  # Gå til neste sete etter at billetttype er tildelt
+    # Registrer hvilke seter som er reservert og tilhørende billettype
+    for sete in ledige_seter:
+        radnummer, omraade_navn, seteNr = sete
+        # Finn en billetttype som er igjen i billett_dict og reserver sete for denne billettypen
+        # Legger til prisen for billetten i totalpris og reduserer antall billetter igjen for denne billettypen
+        for billettype, antall in billetttype_dict.items():
+            if antall > 0:
+                pris = billettype_til_pris[billettype]
+                totalpris += pris
+                billetttype_dict[billettype] -= 1
 
-        # Oppdater totalpris i Billettkjop
-        cursor.execute('''
-            UPDATE Billettkjop
-            SET Totalpris = ?
-            WHERE KjopID = ?
-        ''', (totalpris, kjopID))
+                # Registrer sete og billettype
+                cursor.execute('''
+                    INSERT INTO ReservererStol (KjopID, BillettNr, SalID, RadNr, SeteNr, OmraadeNavn)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                ''', (kjopID, billettNr, salID, radnummer, seteNr, omraade_navn))
+                print(kjopID, billettNr, salID, radnummer, seteNr, omraade_navn)
+                cursor.execute('''
+                    INSERT INTO Billettype (KjopID, BillettNr, Type)
+                    VALUES (?, ?, ?)
+                ''', (kjopID, billettNr, billettype))
+                
+                billettNr += 1
+                break  # Gå til neste sete etter at billetttype er tildelt
+
+    # Oppdater totalpris i Billettkjop
+    cursor.execute('''
+        UPDATE Billettkjop
+        SET Totalpris = ?
+        WHERE KjopID = ?
+    ''', (totalpris, kjopID))
         
-        # Commit transaksjonen
-        con.commit()
-        print("Kjøpet ble vellykket utført.")
-        
-    except sqlite3.Error as e:
-        # Hvis noe går galt, rollback
-        print("En feil oppstod under kjøpsprosessen:", e)
-        con.rollback()
+    print("Kjøpet ble utført.")
 
-   
+
 def billettkjop_system(ekstern_cursor):
     """
     Billettkjøp-systemet som lar en bruker kjøpe et antall billetter innenfor en rad for en gitt forestilling.

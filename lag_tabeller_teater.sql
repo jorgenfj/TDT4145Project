@@ -1,3 +1,11 @@
+-- Endringer fra innlevering 1:
+-- 1. Endret alle int til integer for å få auto-increment til å fungere
+-- Endret til en mer logisk rekkefølge på tabellene
+-- Pristyper endret til Pristype
+-- Fremmednøkkel i Teaterbillett(TeaterstykkeID) refererer til teaterstykke istedenfor pristype
+-- Fjernet fremmednøkkel(Type) i Billettype
+-- Billettype har fremmednøkkel(KjopID) til Teaterbillett istedenfor billettkjop
+
 BEGIN TRANSACTION;
 
 DROP TABLE IF EXISTS Teatersal;
@@ -178,6 +186,5 @@ CREATE TABLE Billettkjop (
     PRIMARY KEY (KjopID),
     FOREIGN KEY (KundeID) REFERENCES KundeProfil(KundeID) ON DELETE CASCADE ON UPDATE CASCADE
 );
-
 
 COMMIT;

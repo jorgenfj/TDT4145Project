@@ -1,78 +1,114 @@
 import sqlite3
-from clean_database import create_database_from_sql_script
-from brukerhistorie1 import fyll_database
-from brukerhistorie2 import insett_billetter_fra_filer
-from billettkjop import billettkjop_system
-from brukerhistorie4 import spor_om_dato
-from brukerhistorie7 import brukerhistorie7
-
 import re
+from lag_tabeller_teater import lag_tabeller_teater
+from brukstilfelle1_fyll_database import fyll_database
+from brukstilfelle1_les_stoler import insett_stoler_fra_filer
+from brukstilfelle2 import insett_billetter_fra_filer
+from brukstilfelle3 import billettkjop_system
+from brukstilfelle4 import spor_om_dato
+from brukstilfelle5 import skuespillere_i_teaterstykker
+from brukstilfelle6 import mest_solgt_forestilling
+from brukstilfelle7 import skuespillere_i_samme_akt
 
-db_file = 'teater.db'
-sql_script_file = 'teater.sql'
+db_fil = 'teater.db'
+sql_script_fil = 'lag_tabeller_teater.sql'
 
-con = sqlite3.connect(db_file)
+con = sqlite3.connect(db_fil)
 cursor = con.cursor()
 con.execute('PRAGMA foreign_keys = ON')
-cursor.execute("PRAGMA encoding = 'UTF-8'")
 
 def main():
-    program = 0
-    print('\nVelkommen til Trøndelag Teater!\n')
+    program = None
+    print('\nVelkommen til Trøndelag Teater!')
     while True:
-        print('Du har 8 valg, trykk tallet som korresponderer til ønsket handling:')
+        if program == 'q':
+            break
+        print('\nDu har 8 valg, trykk tallet som korresponderer til ønsket handling:')
+        print('Du kan taste q for å gå tilbake i interaktive programmer, eller ^C for å avbryte programmet.')
         print('''
-1 - Brukerhistoriene 1: Fyll databaser
-2 - Brukerhistoriene 2: Legg inn seter fra gitt .txt filer
-3 - Brukerhistoriene 3: Kjøp 9 billetter til Størst av alt er kjærligheten
-4 - Brukerhistoriene 4: Søk på forestilling etter dato
-5 - Brukerhistoriene 5: Navn på skuespillere i forskjellige teaterstykker
-6 - Brukerhistoriene 6: Best solgt forestilling
-7 - Brukerhistoriene 7: Skuespiller som har spilt med i samme akt
-8 - Nullstill databasen
-              ''')
+0 - Nullstill og lag tomme tabeller 
+1 - Brukstilfelle 1: Fyll inn tabellene med data
+2 - Brukstilfelle 2: Legg inn seter fra gitt .txt filer
+3 - Brukstilfelle 3: Kjøp billetter til en forestilling
+4 - Brukstilfelle 4: Søk på forestilling etter dato
+5 - Brukstilfelle 5: Navn på skuespillere i forskjellige teaterstykker
+6 - Brukstilfelle 6: Best solgt forestilling
+7 - Brukstilfelle 7: Skuespiller som har spilt med i samme akt
+            ''')
         while True:
             program = input('Tast inn et tall: ')
-            gyldig_program = r'[1-8]'
-            if re.match(program, gyldig_program):
-                print('Skriv inn et gyldig tall fra 1-7')
+            gyldig_program = r'[0-7]'
+            if program == 'q':
+                break
+            if not re.match(program, gyldig_program):
+                print('Skriv inn et gyldig tall fra 0-7')
             else:
                 program = int(program)
-                break
-        while True:
-            if program == 1:
-                create_database_from_sql_script(db_file, sql_script_file) # Burde kjøres på starten av main før første while loop?
-                fyll_database(cursor)  # Får ikke lest inn stolene fra filene, mistenker cursor feil
-                insett_stoler_fra_filer(cursor)
-                print('Databasen er nå fylt')
-                break
+            if program == 0:
+                try:
+                    lag_tabeller_teater(sql_script_fil, cursor)
+                    con.commit()
+                    print('Tabellene er laget i filen teater.db')
+                except Exception as e:
+                    print(f"ERROR: {e}")
+                    con.rollback()
+                continue
+            elif program == 1:
+                try:
+                    fyll_database(cursor) 
+                    insett_stoler_fra_filer(cursor)
+                    con.commit()
+                    print('Databasen er fylt med data')
+                except Exception as e:
+                    if "UNIQUE constraint failed" in str(e):
+                        print("ERROR: UNIQUE Constrant har oppstått.\n Vennligst tøm databasen først for å kjøre denne en gang til.")
+                    else:
+                        print(f"ERROR: {e}")
+                    con.rollback()
+                continue
             elif program == 2:
-                insett_billetter_fra_filer(cursor) #samme som over, får ikke lest inn billetter fordi vi mangler stoler
-                print('Billettene er lest fra fil')
-                break
-            elif program == 3:  # begin transaction og rollback for hver brukerhistorie eller bare de som innsetter? Her i main eller i funksjonene?
-                billettkjop_system(cursor)
+                try:
+                    insett_billetter_fra_filer(cursor)
+                    con.commit()
+                    print('Setene er lagt til i databasen')
+                except Exception as e:
+                    if "UNIQUE constraint failed" in str(e):
+                        print("ERROR: UNIQUE Constrant har oppstått.\n Vennligst tøm databasen først for å kjøre denne en gang til.")
+                    else:
+                        print(f"ERROR: {e}")
+                    con.rollback()
+                continue
+            elif program == 3: 
+                try:
+                    billettkjop_system(cursor)
+                    con.commit()
+                except Exception as e:
+                    print(f"ERROR: {e}")
+                    con.rollback()
                 break
             elif program == 4:
-                spor_om_dato(cursor)
-                break
+                try:
+                    spor_om_dato(cursor)
+                except Exception as e:
+                    print(f"ERROR: {e}")
+                continue
             elif program == 5:
-                bh5 = open('brukerhistorie5.sql', 'r')
-                brukerhistorie5 = bh5.read()
-                bh5.close()
-                con.execute(brukerhistorie5) # Tror python klager på "." i sql scriptet
+                try:
+                    skuespillere_i_teaterstykker(cursor)
+                except Exception as e:
+                    print(f"ERROR: {e}")
                 break
             elif program == 6:
-                bh6 = open('brukerhistorie6.sql', 'r')
-                brukerhistorie6 = bh6.read()
-                bh6.close()
-                con.execute(brukerhistorie6) # Tror python klager på "." i sql scriptet
+                try:
+                    mest_solgt_forestilling(cursor)
+                except Exception as e:
+                    print(f"ERROR: {e}")
                 break
             elif program == 7:
-                brukerhistorie7(cursor)
-                break
-            elif program == 8:
-                create_database_from_sql_script(db_file, sql_script_file)
+                try:
+                    skuespillere_i_samme_akt(cursor)
+                except Exception as e:
+                    print(f"ERROR: {e}")
                 break
 
 if __name__ == "__main__":

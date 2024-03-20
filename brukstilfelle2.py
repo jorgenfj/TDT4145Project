@@ -155,3 +155,5 @@ def insett_billetter_fra_filer(cursor):
     """
     insett_billetter_hovedscenen(cursor)
     insett_billetter_gamle_scene(cursor)
+
+    
