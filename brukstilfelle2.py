@@ -129,7 +129,6 @@ def insett_billetter_i_database(cursor, billetter, KjopID, kjop_info):
     og detaljer for hver individuelle billett (Billettype, ReservererStol).
     'KjopID' benyttes for å knytte billetter til et spesifikt kjøp.
     """
-    cursor.execute("INSERT INTO KundeProfil (Mobilnummer, Navn, Adresse) VALUES (99999999, 'Testbruker', 'Testveien 1')")
     KundeID = cursor.lastrowid
     # Innsetting av Billettkjop, Teaterbillett, og ReservererForestilling
     cursor.execute("INSERT INTO Billettkjop (KjopID, KundeID, Totalpris, Dato, Tid) VALUES (?, ?, ?, ?, ?)",
