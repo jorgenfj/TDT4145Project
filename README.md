@@ -67,4 +67,4 @@ Ved oppstart får man 8 valg av programmer som kan kjøres.
  **NB! Brukerhistorie 0 og 1 må kjøres før noen av de andre vil fungere.**
 
  ## Tekstlige resultater fra brukerhistorier
- Alle tekstlige resultater fra spørringer ligger vedlagt i brukstilfellerOutput.pdf
+ Alle tekstlige resultater fra spørringer ligger vedlagt i [brukstilfeller_output.pdf](brukstilfeller_output.pdf)
