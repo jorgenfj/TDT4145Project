@@ -12,11 +12,7 @@ Denne veiledningen vil hjelpe deg med å sette opp databasen og installere de n�
 
 Følg disse stegene for å sette opp SQLite-databasen for dette prosjektet:
 
-1. **Last ned SQLite3**
-   - **VSCode**
-      - Last ned SQLite-extension i VSCode
-
-2. **Opprett databasen**
+1. **Opprett databasen**
    - Åpne en terminal eller kommandoprompt.
    - Naviger til mappen der du har lastet ned prosjektet.
    - For å opprette databasen fra SQL-scriptet, kjør main()-funksjonen i main.py. I terminalen blir du spurt om å velge en funksjon. Tast 0.
