@@ -1,5 +1,4 @@
 import sqlite3
-import re
 from lag_tabeller_teater import lag_tabeller_teater
 from brukstilfelle1_fyll_database import fyll_database
 from brukstilfelle1_les_stoler import insett_stoler_fra_filer
@@ -37,13 +36,16 @@ def main():
             ''')
         while True:
             program = input('Tast inn et tall: ')
-            gyldig_program = r'[0-7]'
             if program == 'q':
                 break
-            if not re.match(program, gyldig_program):
-                print('Skriv inn et gyldig tall fra 0-7')
-            else:
+            try:
                 program = int(program)
+                if program < 0 or program > 7:
+                    print('Skriv inn et gyldig tall fra 0-7')
+                    continue
+            except ValueError:
+                print('Skriv inn et gyldig tall fra 0-7')
+                continue
             if program == 0:
                 try:
                     lag_tabeller_teater(sql_script_fil, cursor)
