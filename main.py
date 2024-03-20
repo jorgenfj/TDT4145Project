@@ -72,7 +72,7 @@ def main():
                 try:
                     insett_billetter_fra_filer(cursor)
                     con.commit()
-                    print('Setene er lagt til i databasen')
+                    print('Billettene er lagt til i databasen')
                 except Exception as e:
                     if "UNIQUE constraint failed" in str(e):
                         print("ERROR: UNIQUE Constrant har oppstått.\n Vennligst tøm databasen først for å kjøre denne en gang til.")

@@ -22,17 +22,17 @@ def finn_alle_forestillinger():
     for idx, forestilling in enumerate(forestillinger, start=1):
         forestillinger_tabell.add_row([idx] + list(forestilling[:-2])) # Eksluder SalID og TeaterstykkeID fra tabellen
         
-    print(f'\n {forestillinger_tabell} \n')
+    print(f'\n{forestillinger_tabell}\n')
 
     return forestillinger
 
 def velg_forestilling(forestillinger):
     """
-    Velg en forestilling ved å oppgi radnummer i forestillingstabellen.
+    Velg en forestilling ved å oppgi nummer i forestillingstabellen.
     Returnerer valgt forestilling med tittel, dato, tidspunkt, salnavn, teaterstykkeID og salID.
     """
     while True:
-        valgt_forestillings_nummer = input("Velg en forestilling ved å oppgi radnummer, eller tast q for å gå tilbake: ")
+        valgt_forestillings_nummer = input("Velg en forestilling ved å oppgi nummer i forestillingstabellen, eller tast q for å gå tilbake: ")
         if valgt_forestillings_nummer == 'q':
             return 'q'
         try:
@@ -182,6 +182,15 @@ def velg_billettyper(ledige_seter, teaterstykkeID):
         SELECT Type, Pris
         FROM Pristype
         WHERE TeaterstykkeID = ?
+        ORDER BY CASE Type
+            WHEN 'ORDINÆR' THEN 1
+            WHEN 'HONNØR' THEN 2
+            WHEN 'STUDENT' THEN 3
+            WHEN 'BARN' THEN 4
+            WHEN 'GRUPPE 10' THEN 5
+            WHEN 'GRUPPE HONNØR 10' THEN 6
+            ELSE 7
+            END              
     ''', (teaterstykkeID,))
     billettyper = cursor.fetchall()
     billettyper_tabell = PrettyTable(['TypeNr', 'Type', 'Pris'])
@@ -207,7 +216,7 @@ def velg_billettyper(ledige_seter, teaterstykkeID):
                 print("Ugyldig TypeNr, prøv igjen.")
                 continue
             # Sjekk om valgt billettype er en gruppebillett og om det er nok billetter igjen i dette kjøpet for å kjøpe gruppebilletter
-            if billettyper[valgt_billettype][0].startswith("Gruppe") and len(ledige_seter) - totalt_valgte_billetter < 10:
+            if billettyper[valgt_billettype][0].startswith("GRUPPE") and len(ledige_seter) - totalt_valgte_billetter < 10:
                 print(f"Denne typen har et min antall på 10. Du må bestemme type for de resterende {len(ledige_seter) - totalt_valgte_billetter} billettene dine.")
                 continue
             
@@ -222,7 +231,7 @@ def velg_billettyper(ledige_seter, teaterstykkeID):
             if totalt_valgte_billetter + antall_billetter > len(ledige_seter):
                 print(f"Du har valgt for mange billetter for dette kjøpet. Du må velge type for de resterende {len(ledige_seter) - totalt_valgte_billetter} billettene i kjøpet.")
                 continue
-            if billettyper[valgt_billettype][0].startswith("Gruppe") and antall_billetter < 10:
+            if billettyper[valgt_billettype][0].startswith("GRUPPE") and antall_billetter < 10:
                 print(f"Minimum antall billetter for denne billettypen er {10}. Prøv igjen.")
                 continue
             
@@ -236,6 +245,8 @@ def velg_billettyper(ledige_seter, teaterstykkeID):
 
             # Oppdater totalt_valgte_billetter for dette kjøpet
             totalt_valgte_billetter += antall_billetter
+            print(f"Du har valgt {antall_billetter} billetter av typen {billettype_navn}.")
+            print(f"Du har {len(ledige_seter) - totalt_valgte_billetter} billettyper igjen å velge for dette kjøpet.")
 
             if totalt_valgte_billetter == len(ledige_seter):
                 break
@@ -326,16 +337,13 @@ def utfør_kjøp(valgt_forestilling, ledige_seter, billetttype_dict, billettyper
     """
     teaterstykketittel, dato, tidspunkt, salnavn, teaterstykkeID, salID = valgt_forestilling
     # Start transaksjon
-
     # Opprett et nytt kjøp i Billettkjop-tabellen
     cursor.execute('''
         INSERT INTO Billettkjop (Dato, Tid, Totalpris, KundeID)
         VALUES (CURRENT_DATE, CURRENT_TIME, ?, ?)
     ''', (0, kundeID))  # Totalpris settes midlertidig til 0 og oppdateres senere
-
     # Hent KjopID for det nyopprettede kjøpet
     kjopID = cursor.lastrowid
-
     # Registrer kjøptet i Teaterbillett-tabellen
     cursor.execute('''
         INSERT INTO TeaterBillett (KjopID, TeaterstykkeID)
@@ -346,7 +354,6 @@ def utfør_kjøp(valgt_forestilling, ledige_seter, billetttype_dict, billettyper
         INSERT INTO ReservererForestilling (KjopID, TeaterstykkeID, ForestillingsDato, ForestillingsTidspunkt)
         VALUES (?, ?, ?, ?)
     ''', (kjopID, teaterstykkeID, dato, tidspunkt))
-
     totalpris = 0
     billettNr = 1
     # billetttype_til_pris er en dictionary med billettype som nøkkel og pris som verdi.
@@ -362,17 +369,15 @@ def utfør_kjøp(valgt_forestilling, ledige_seter, billetttype_dict, billettyper
                 pris = billettype_til_pris[billettype]
                 totalpris += pris
                 billetttype_dict[billettype] -= 1
-
                 # Registrer sete og billettype
-                cursor.execute('''
-                    INSERT INTO ReservererStol (KjopID, BillettNr, SalID, RadNr, SeteNr, OmraadeNavn)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                ''', (kjopID, billettNr, salID, radnummer, seteNr, omraade_navn))
-                print(kjopID, billettNr, salID, radnummer, seteNr, omraade_navn)
                 cursor.execute('''
                     INSERT INTO Billettype (KjopID, BillettNr, Type)
                     VALUES (?, ?, ?)
                 ''', (kjopID, billettNr, billettype))
+                cursor.execute('''
+                    INSERT INTO ReservererStol (KjopID, BillettNr, SalID, RadNr, SeteNr, OmraadeNavn)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                ''', (kjopID, billettNr, salID, radnummer, seteNr, omraade_navn))
                 
                 billettNr += 1
                 break  # Gå til neste sete etter at billetttype er tildelt
@@ -397,7 +402,7 @@ def billettkjop_system(ekstern_cursor):
     while True:
         forestillinger = finn_alle_forestillinger()
         if forestillinger == None:
-            print("ERROR: Ingen forestillinger funnet.")
+            print("ERROR: Ingen forestillinger funnet. Vennligst kjør brukstilfelle 1 først.")
             return
 
         valgt_forestilling = velg_forestilling(forestillinger)

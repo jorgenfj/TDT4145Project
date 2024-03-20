@@ -215,5 +215,3 @@ INSERT INTO Pristype VALUES (2, 'BARN', 220);
 INSERT INTO Pristype VALUES (2, 'GRUPPE 10', 320);
 INSERT INTO Pristype VALUES (2, 'GRUPPE HONNØR 10', 270);
 
--- Kundeprofiler
-INSERT INTO KundeProfil VALUES (0, 99999999, 'Testbruker', 'Testveien 1');

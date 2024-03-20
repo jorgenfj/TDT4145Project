@@ -59,7 +59,7 @@ def les_seksjonsbilletter_gamle_scene(seksjon, seksjonsrader):
     return billetter
 
 
-def insett_billetter_hovedscenen(cursor):
+def insett_billetter_hovedscenen(cursor, kunde_id):
     """
     Leser filen for Hovedscenen, henter informasjon om billetter, og kaller en hjelpefunksjon for å sette inn
     disse billettene i databasen.
@@ -75,7 +75,7 @@ def insett_billetter_hovedscenen(cursor):
     billetter.extend(nye_billetter)
 
     kjop_info = {
-        'kunde_id': 0, 
+        'kunde_id': kunde_id, 
         'totalpris': 0,  
         'dato': les_dato(filinnhold),
         'tid': hovedscenen_tid,
@@ -84,7 +84,7 @@ def insett_billetter_hovedscenen(cursor):
 
     insett_billetter_i_database(cursor, billetter, kjop_id_hovedscenen, kjop_info)
 
-def insett_billetter_gamle_scene(cursor):
+def insett_billetter_gamle_scene(cursor, kunde_id):
     """
     Leser filen for Gamle Scene, henter informasjon om billetter for hver seksjon, og kaller en hjelpefunksjon
     for å sette inn disse billettene i databasen.
@@ -113,7 +113,7 @@ def insett_billetter_gamle_scene(cursor):
         billetter.extend(nye_billetter)
 
     kjop_info = {
-        'kunde_id': 0,  
+        'kunde_id': kunde_id,  
         'totalpris': 0,
         'dato': les_dato(filinnhold),
         'tid': gamle_scene_tid,
@@ -129,6 +129,8 @@ def insett_billetter_i_database(cursor, billetter, KjopID, kjop_info):
     og detaljer for hver individuelle billett (Billettype, ReservererStol).
     'KjopID' benyttes for å knytte billetter til et spesifikt kjøp.
     """
+    cursor.execute("INSERT INTO KundeProfil (Mobilnummer, Navn, Adresse) VALUES (99999999, 'Testbruker', 'Testveien 1')")
+    KundeID = cursor.lastrowid
     # Innsetting av Billettkjop, Teaterbillett, og ReservererForestilling
     cursor.execute("INSERT INTO Billettkjop (KjopID, KundeID, Totalpris, Dato, Tid) VALUES (?, ?, ?, ?, ?)",
                    (KjopID, kjop_info['kunde_id'], kjop_info['totalpris'], kjop_info['dato'], kjop_info['tid']))
@@ -153,7 +155,9 @@ def insett_billetter_fra_filer(cursor):
     Denne funksjonen kaller funksjonene for å leses billetter fra filene for både Hovedscenen og Gamle Scene.
     Setter så disse inn i databasen.
     """
-    insett_billetter_hovedscenen(cursor)
-    insett_billetter_gamle_scene(cursor)
+    cursor.execute("INSERT INTO KundeProfil (Mobilnummer, Navn, Adresse) VALUES (99999999, 'Testbruker', 'Testveien 1')")
+    kunde_id = cursor.lastrowid
+    insett_billetter_hovedscenen(cursor, kunde_id)
+    insett_billetter_gamle_scene(cursor, kunde_id)
 
     
