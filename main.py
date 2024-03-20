@@ -87,30 +87,35 @@ def main():
                 except Exception as e:
                     print(f"ERROR: {e}")
                     con.rollback()
+                input("Trykk enter for å gå tilbake")
                 break
             elif program == 4:
                 try:
                     spor_om_dato(cursor)
                 except Exception as e:
                     print(f"ERROR: {e}")
-                continue
+                input("Trykk enter for å gå tilbake")
+                break
             elif program == 5:
                 try:
                     skuespillere_i_teaterstykker(cursor)
                 except Exception as e:
                     print(f"ERROR: {e}")
+                input("Trykk enter for å gå tilbake")
                 break
             elif program == 6:
                 try:
                     mest_solgt_forestilling(cursor)
                 except Exception as e:
                     print(f"ERROR: {e}")
+                input("Trykk enter for å gå tilbake")
                 break
             elif program == 7:
                 try:
                     skuespillere_i_samme_akt(cursor)
                 except Exception as e:
                     print(f"ERROR: {e}")
+                input("Trykk enter for å gå tilbake")
                 break
 
 if __name__ == "__main__":
